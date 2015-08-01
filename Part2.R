@@ -42,8 +42,7 @@ best <- function(state, outcome){
     #"heart attack", "heart failure", or "pneumonia"
     possOutcome <- c("heart attack", "heart failure", "pneumonia")
     if( !(outcome %in% possOutcome) ){
-        stop("Second argument ('outcome') must
-            be one of 'heart attack', 'heart failure', or 'pneumonia'.")
+        stop("invalid outcome")
     }
     
     
@@ -72,6 +71,13 @@ best <- function(state, outcome){
     #Partition for given state
     ############################
     interestingData <- careTable[careTable$State == state, interestingColIndex]
+    colClasses <- c("character", "character", "numeric", "numeric", "numeric")
+    for(i in 1:length(colClasses)) {
+        suppressWarnings(
+            class(interestingData[[i]]) <- colClasses[i]
+        )
+    }
+    
     
     heartAttackInd <- 3
     heartFailInd <- 4
@@ -89,11 +95,14 @@ best <- function(state, outcome){
     
 
     #Get list of hospitals with best score
-    bestScore <- min( interestingData[[outcomeInd]], na.rm=TRUE)
+
+    bestScore <- suppressWarnings(
+                    min( as.numeric(interestingData[[outcomeInd]]), na.rm=TRUE)
+                )
     bestHospitals <- interestingData[ interestingData[outcomeInd] == bestScore,]
 
-    
     #Return hospital name (first in alphabetical list if there is a tie).
-    return(bestHospitals[1,"Hospital.Name"])
+    sort(bestHospitals[,2])[1]
+    
     
 }

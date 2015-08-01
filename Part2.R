@@ -34,7 +34,7 @@
 
 best <- function(state, outcome){
     #Import data
-    careTable <- read.csv("outcome-of-care-measures.csv")
+    careTable <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
     
     #Check validity of input file and arguments
     ############################################
@@ -73,8 +73,27 @@ best <- function(state, outcome){
     ############################
     interestingData <- careTable[careTable$State == state, interestingColIndex]
     
+    heartAttackInd <- 3
+    heartFailInd <- 4
+    pneumoniaInd <- 5
     
+    if(outcome == "heart attack"){
+        outcomeInd <- heartAttackInd
+    } else if( outcome == "heart failure"){
+        outcomeInd <- heartFailInd
+    } else if( outcome == "pneumonia"){
+        outcomeInd <- pneumoniaInd
+    } else {
+        stop("Something unexpected happened.")
+    }
+    
+
+    #Get list of hospitals with best score
+    bestScore <- min( interestingData[[outcomeInd]], na.rm=TRUE)
+    bestHospitals <- interestingData[ interestingData[outcomeInd] == bestScore,]
+
+    
+    #Return hospital name (first in alphabetical list if there is a tie).
+    return(bestHospitals[1,"Hospital.Name"])
     
 }
-
-best("AL","heart attack")

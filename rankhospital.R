@@ -32,8 +32,15 @@
 #SOLUTION
 ##########################
 rankhospital <- function(state, outcome, num = "best") {
-    #Import data
-    careTable <- read.csv("outcome-of-care-measures.csv", colClasses = "character")
+
+    #Check if file exists and import data.
+    ######################################
+    filename <- "outcome-of-care-measures.csv"
+    if( filename %in% dir() ) {
+        careTable <- read.csv(filename, colClasses = "character")
+    }else{
+        stop("Could not find data in working directory.")
+    }
     
     ############################################
     #Check validity of input file and arguments
@@ -111,7 +118,7 @@ rankhospital <- function(state, outcome, num = "best") {
         filteredHospitals[!is.na(filteredHospitals[[2]]), ]
     #Order list
     permut <- order(cleanedHospitals[2],cleanedHospitals[1])
-    rankedHospitals <- cleanedHospitals[permut,c(2,out)]
+    rankedHospitals <- cleanedHospitals[permut,]
     
     ########################
     #Return requested result
@@ -119,9 +126,9 @@ rankhospital <- function(state, outcome, num = "best") {
     maxRank <- nrow(rankedHospitals)  #max rank in current list
     
     #Convert words to appropriate rank numbers.
-    if(num = "best"){
+    if(num == "best"){
         num <- 1L
-    } else if ( num = "worst") {
+    } else if ( num == "worst") {
         num <- maxRank
     }
 
